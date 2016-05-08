@@ -1,9 +1,11 @@
 socket = require "socket"
-local udp = socket.udp()
 
---udp:settimeout(0)
-udp:setsockname("*", 9995)
+local port = 9995
+local udp = socket.udp()
+udp:setsockname("*", port)
 
 while true do
-    print(udp:receivefrom())
+    data, ip, port = udp:receivefrom()
+    print(data, ip, port)
+    udp:sendto("Thanks!", ip, port)
 end
