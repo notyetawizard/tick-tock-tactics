@@ -1,3 +1,5 @@
+entity = require "libs/entity"
+
 function love.load()
     love.graphics.setDefaultFilter("nearest")
     love.graphics.setBackgroundColor(0, 64, 64)
@@ -6,21 +8,25 @@ function love.load()
     hero = {
         x = 8,
         y = 8,
+        dx = 0,
+        dy = 0,
         speed = 1,
-        action = function () end,
         sprite = love.graphics.newImage("hero.png")
     }
-    function hero:none()
-        cursor:lock(false)
-        function self.action() end
+    
+    function hero:move(dir)
+        if dir = "up" then end
     end
     
+    hero.action = hero.move
+    
+    --[[
     function hero:move()
         --return a function into hero.action, if the move is good.
         if math.abs(self.x - cursor.x) + math.abs(self.y - cursor.y) <= self.speed 
         and (cursor.x ~= self.x or cursor.y ~= self.y) then
             cursor:lock(true)
-            function self:action()
+            self.action  = function ()
                 self.x, self.y = cursor.x, cursor.y
                 self:none()
             end
@@ -28,6 +34,7 @@ function love.load()
         end
         
     end
+    --]]
     
     cursor = {
         x = hero.x,
@@ -55,23 +62,17 @@ function love.load()
 end
 
 function love.keypressed(key)
-    if cursor.locked == false then
-        if key == (",") then cursor.y = cursor.y - 1 end
-        if key == ("o") then cursor.y = cursor.y + 1 end
-        if key == ("a") then cursor.x = cursor.x - 1 end
-        if key == ("e") then cursor.x = cursor.x + 1 end
-    end
-    if key == ("t") then hero:move() end
-    if key == ("h") then hero:none() end
+    if key == (",") then hero:action("up")
+    if key == ("o") then hero:action("down")
+    if key == ("a") then hero:action("left")
+    if key == ("e") then hero:action("right")
 end    
 
 function love.update(dt)    
     timer = timer + dt 
     if timer > turn_time then
         timer = timer - turn_time
-        hero:action()
-    end
-    
+    end    
 end
 
 function love.draw()
