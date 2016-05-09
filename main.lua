@@ -24,8 +24,8 @@ function love.keypressed(key)
 end
 
 function love.update()
-    udp:send(msg)
-    print(udp:receive())
+    --udp:send(msg)
+    udp:receive()
 end
 
 function love.draw()
