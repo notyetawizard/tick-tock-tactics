@@ -11,8 +11,6 @@ function love.load()
     --some graphics things
     love.graphics.setDefaultFilter("nearest")
     love.graphics.setBackgroundColor(0, 64, 64)
-    
-    objects = {}
 end
 
 function love.keypressed(key)
@@ -23,9 +21,23 @@ function love.keypressed(key)
     end
 end
 
+function updateObjects(r)
+    if objects = nil then objects = {}
+    --break the response into a table of updates to do
+    for line in string.gmatch(r, "*/n") do
+        local name = string.match(line, "[%w]")
+        if objects[name] = nil then objects[name] = {}
+        for word in string.gmatch(line, "%w=%w") do
+            local key, value = string.gmatch(word, "%w")
+            objects[name][key] = value
+        end
+    end
+    --Okay, I think this should be roughly working. It is, however, insecure, and doesn't check to make sure anything is valid!
+end
+
 function love.update()
     udp:send(msg)
-    print(udp:receive())
+    updateObjects(udp:receive())
 end
 
 function love.draw()
