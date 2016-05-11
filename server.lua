@@ -3,6 +3,7 @@ entity = require "libs/entity"
 
 local port = 9995
 local udp = socket.udp()
+udp:settimeout(1)
 udp:setsockname("*", port)
 
 --only objects need to be sent to client as updates, map data should be sent *once* at the beggining of a game, or loaded from the files.
@@ -22,16 +23,18 @@ function serializeObjects()
     return msg
 end
 
-function updateObjects()
-    action, dir = string.match("([%w]+) ([%w]+)")
+function updateObjects(dg)
+    action, dir = string.match(dg, "([%w]+) ([%w]+)")
     if action == "mv" then
         --need to set this up for multiple clients!
-        hero:move(dir)
+        objects.hero:move(dir)
     end
 end
 
 while true do
-    data, ip, port = udp:receivefrom()
-    
-    udp:sendto(serializeObjects(), ip, port)
+    dg, ip, port = udp:receivefrom()
+    if dg then 
+        updateObjects(dg)
+        udp:sendto(serializeObjects(), ip, port)
+    end
 end

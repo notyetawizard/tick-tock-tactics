@@ -5,8 +5,7 @@ function love.load()
     udp = socket.udp()
     local address, port = "50.72.136.153", 9995
     udp:settimeout(0)
-    udp:setpeername(address, port)
-    msg = "Here's a message!"    
+    udp:setpeername(address, port)   
     tile_size = 16
     
     --some graphics things
@@ -31,11 +30,10 @@ function love.keypressed(key)
     end
 end
 
-function updateObjects(r)
-    --if not objects then objects = {} end
+function updateObjects(dg)
     --break the response into a table of updates to do
     if not objects then objects = {} end
-    for name, attr in string.gmatch(r, "([%w]+) ([%w= ]+)\n") do
+    for name, attr in string.gmatch(dg, "([%w]+) ([%w= ]+)\n") do
         if not objects[name] then objects[name] = {} end
         for key, value in string.gmatch(attr, "(%w+)=(%w+)") do
             objects[name][key] = value
@@ -46,8 +44,8 @@ function updateObjects(r)
 end
 
 function love.update()
-    r = udp:receive()
-    if r then updateObjects(r) end
+    dg = udp:receive()
+    if dg then updateObjects(dg) end
 end
 
 function love.draw()
