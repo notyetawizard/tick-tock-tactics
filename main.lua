@@ -20,10 +20,14 @@ function love.load()
 end
 
 function love.keypressed(key)
-    if key == (",") then hero:action("up")
-    elseif key == ("o") then hero:action("down")
-    elseif key == ("a") then hero:action("left")
-    elseif key == ("e") then hero:action("right")
+    local function move(dir)
+        udp:send("mv "..dir)
+    end
+    
+    if key == (",") then move("up")
+    elseif key == ("o") then move("down")
+    elseif key == ("a") then move("left")
+    elseif key == ("e") then move("right")
     end
 end
 
@@ -31,17 +35,17 @@ function updateObjects(r)
     --if not objects then objects = {} end
     --break the response into a table of updates to do
     if not objects then objects = {} end
-    for name, updates in string.gmatch(r, "([%w]+) ([%w= ]+)\n") do
+    for name, attr in string.gmatch(r, "([%w]+) ([%w= ]+)\n") do
         if not objects[name] then objects[name] = {} end
-        for key, value in string.gmatch(updates, "(%w+)=(%w+)") do
+        for key, value in string.gmatch(attr, "(%w+)=(%w+)") do
             objects[name][key] = value
         end
     end
     --Okay, I think this should be roughly working. It is, however, insecure, and doesn't check to make sure anything is valid! All that validation should happen prior to things getting put in the objects table, which means: parse into new table; validate and return into objects if good.
+    --Actually, *can* the objects be invalid? Can the client even judge that?
 end
 
 function love.update()
-    udp:send(msg)
     r = udp:receive()
     if r then updateObjects(r) end
 end
