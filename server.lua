@@ -22,8 +22,16 @@ function serializeObjects()
     return msg
 end
 
+function updateObjects()
+    action, dir = string.match("([%w]+) ([%w]+)")
+    if action == "mv" then
+        --need to set this up for multiple clients!
+        hero:move(dir)
+    end
+end
+
 while true do
     data, ip, port = udp:receivefrom()
-    print(data, ip, port)
+    
     udp:sendto(serializeObjects(), ip, port)
 end
