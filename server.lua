@@ -16,7 +16,8 @@ objects = {
 function serializeObjects()
     local msg = ""
     for k, v in pairs(objects) do
-        msg = msg..table.concat({k, v.x, v.y}, " ").."\n" 
+        --seperate the x,y,hp,etc out somehow? Loop through them.
+        msg = msg..table.concat({k, "x="..v.x, "y="..v.y}, " ").."\n" 
     end
     return msg
 end
