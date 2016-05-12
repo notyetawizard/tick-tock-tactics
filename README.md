@@ -1,2 +1,2 @@
 # tick-tock-tactics
-A tactical game, played in simultaneous, timed turns.
+A tactical game, played in on a grid in real time, rather than turns.

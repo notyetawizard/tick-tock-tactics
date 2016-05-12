@@ -1,5 +1,5 @@
 socket = require "socket"
-entity = require "libs/entity"
+entity = require "libs/map"
 
 local port = 9995
 local udp = socket.udp()
@@ -9,25 +9,23 @@ udp:setsockname("*", port)
 --only objects need to be sent to client as updates, map data should be sent *once* at the beggining of a game, or loaded from the files.
 
 --temporary game data stuff!
-objects = {
-    hero = entity.new(8, 8),
-    enemy = entity.new(3, 6)
-}
+map = map.new()
+map:newObject("token_1", 8, 8)
+map:newObject("token_2", 3, 6)
 
 function serializeObjects()
-    local msg = ""
-    for k, v in pairs(objects) do
+    local dg = ""
+    for k, v in pairs(map.objects) do
         --seperate the x,y,hp,etc out somehow? Loop through them.
-        msg = msg..table.concat({k, "x="..v.x, "y="..v.y}, " ").."\n" 
+        dg = dg..table.concat({k, "x="..v.x, "y="..v.y}, " ").."\n" 
     end
-    return msg
+    return dg
 end
 
 function updateObjects(dg)
-    action, dir = string.match(dg, "([%w]+) ([%w]+)")
+    name, action, dir = string.match(dg, "([%w_]+) ([%w]+) ([%w]+)")
     if action == "mv" then
-        --need to set this up for multiple clients!
-        objects.hero:move(dir)
+        map:move(name, dir)
     end
 end
 

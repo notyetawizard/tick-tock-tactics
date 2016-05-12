@@ -5,22 +5,25 @@ function love.load()
     udp = socket.udp()
     local address, port = "50.72.136.153", 9995
     udp:settimeout(0)
-    udp:setpeername(address, port)   
+    udp:setpeername(address, port)  
+    udp:send("init!") 
     tile_size = 16
     
     --some graphics things
     love.graphics.setDefaultFilter("nearest")
-    love.graphics.setBackgroundColor(0, 64, 64)
-    
     sprites = {
-        hero = love.graphics.newImage("assets/hero.png"),
-        enemy = love.graphics.newImage("assets/cursor.png")
+        tile = love.graphics.newImage("assets/tile.png"),
+        hole = love.graphics.newImage("assets/hole.png")
     }
+    for i = 0, 9, 1 do
+        sprites["token_"..i] = love.graphics.newImage("assets/token_"..i..".png")
+    end
+    
 end
 
 function love.keypressed(key)
     local function move(dir)
-        udp:send("mv "..dir)
+        udp:send("token_1 mv "..dir)
     end
     
     if key == (",") then move("up")
@@ -33,9 +36,9 @@ end
 function updateObjects(dg)
     --break the response into a table of updates to do
     if not objects then objects = {} end
-    for name, attr in string.gmatch(dg, "([%w]+) ([%w= ]+)\n") do
+    for name, attr in string.gmatch(dg, "([%w_]+) ([%w%-= ]+)\n") do
         if not objects[name] then objects[name] = {} end
-        for key, value in string.gmatch(attr, "(%w+)=(%w+)") do
+        for key, value in string.gmatch(attr, "([%w]+)=([%w%-]+)") do
             objects[name][key] = value
         end
     end
@@ -49,10 +52,9 @@ function love.update()
 end
 
 function love.draw()
-    love.graphics.scale(2)
+    love.graphics.scale(3)
     if objects then
         for k,v in pairs(objects) do
-            love.graphics.setColor(255,255,255,255)
             love.graphics.draw(sprites[k], v.x*tile_size, v.y*tile_size)
         end
     end
